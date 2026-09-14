@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -17,10 +18,11 @@ import com.github.btrapp.fastflashfinder.FastFlashObjects.FlashInst;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FlastFlashExceptionErrorCode;
 
 public class FastFlashFinder {
-	private TreeMap<Double,ScanEvent> xMap;
-	private TreeMap<Double,ScanEvent> yMap;
-	private FlashInst zeroZeroFlash; //The reference (0,0) flash.
-	public FastFlashFinder (FlashInst zeroZeroFlash, List<FlashDieInst> dies) {
+	private final TreeMap<Double,ScanEvent> xMap;
+	private final TreeMap<Double,ScanEvent> yMap;
+	private final FlashInst zeroZeroFlash; //The reference (0,0) flash.
+	
+	public  FastFlashFinder (FlashInst zeroZeroFlash, List<FlashDieInst> dies) {
 		this.zeroZeroFlash = zeroZeroFlash;
 		this.xMap = buildScanMap(dies, FlashDieInst::llx, FlashDieInst::urx);
 		this.yMap = buildScanMap(dies, FlashDieInst::lly, FlashDieInst::ury);
@@ -28,15 +30,15 @@ public class FastFlashFinder {
 	
 	public FlashId findFlash(double waferX, double waferY) {
 		//Figure out the difference in X from the zeroZero flash LLx
-		double dxWafer = waferX-zeroZeroFlash.llx();
-		double dxWaferSteps = dxWafer / zeroZeroFlash.steppingWidth();
-		int dxWaferStepInt = (int) Math.floor(dxWaferSteps);
-		
-		double dyWafer = waferY-zeroZeroFlash.lly();
-		double dyWaferSteps = dyWafer / zeroZeroFlash.steppingHeight();
-		int dyWaferStepInt = (int) Math.floor(dyWaferSteps);
-		
+		int dxWaferStepInt = flashStep(waferX, zeroZeroFlash.llx(), zeroZeroFlash.steppingWidth());
+		int dyWaferStepInt = flashStep(waferY, zeroZeroFlash.lly(),zeroZeroFlash.steppingHeight());
 		return new FlashId(dxWaferStepInt,dyWaferStepInt);
+	}
+	
+	private int flashStep(double waferDim, double flashStart, double flashStep) {
+		double dWafer = waferDim-flashStart;
+		double step = dWafer / flashStep;
+		return (int) Math.floor(step);
 	}
 	
 	/**
