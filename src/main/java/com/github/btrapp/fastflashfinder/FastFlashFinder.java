@@ -15,7 +15,6 @@ import com.github.btrapp.fastflashfinder.FastFlashObjects.DieEdgeMatchLogic;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FastFlashException;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FlashDieInst;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FlashId;
-import com.github.btrapp.fastflashfinder.FastFlashObjects.FlastFlashExceptionErrorCode;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.ZeroZeroFlashInst;
 
 public class FastFlashFinder {
@@ -133,7 +132,7 @@ public class FastFlashFinder {
 	 * @return
 	 * @throws FastFlashException
 	 */
-	public FlashDieInst findDieInstanceOrNull(FlashId flashId, double waferX, double waferY) throws FastFlashException {
+	public FlashDieInst findDieInstanceOrNull(FlashId flashId, double waferX, double waferY) {
 		// Convert wafer XY into flash-Relative XY
 		double[] dieXY = calculateFlashRelativeXY(flashId, waferX, waferY);
 		return findDieInstanceOrNullForFlashXY(dieXY[0], dieXY[1]);
@@ -147,7 +146,7 @@ public class FastFlashFinder {
 	}
 
 	// This expects FLASH coordinates (from the LLxy of the correct flash)
-	protected FlashDieInst findDieInstanceOrNullForFlashXY(double flashX, double flashY) throws FastFlashException {
+	protected FlashDieInst findDieInstanceOrNullForFlashXY(double flashX, double flashY) {
 
 		Entry<Double, ScanEvent> seX = xMap.floorEntry(flashX);
 		Entry<Double, ScanEvent> seY = yMap.floorEntry(flashY);
@@ -168,10 +167,7 @@ public class FastFlashFinder {
 			return null;
 		}
 
-		if (yMatches.size() == 1)
-			return yMatches.iterator().next();
-		throw new FastFlashObjects.FastFlashException(FlastFlashExceptionErrorCode.OVERLAPPING_DIES,
-				"Overlapping Dies found at FlashXY: " + flashX + "," + flashY);
+		return yMatches.iterator().next();
 	}
 
 	protected static final class ScanEvent {
