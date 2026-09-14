@@ -1,10 +1,12 @@
 package com.github.btrapp.fastflashfinder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +17,8 @@ import com.github.btrapp.fastflashfinder.FastFlashObjects.FlashId;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.ZeroZeroFlashInst;
 
 /**
- * Check some real world examples to ensure some historical data matches our logic.
+ * Check some real world examples to ensure some historical data matches our
+ * logic.
  */
 public class RealWorldExampleTestCase {
 	@Test
@@ -43,7 +46,7 @@ public class RealWorldExampleTestCase {
 
 	private void allDiesMatch(List<ExpectedRecord> recs, FastFlashFinder fff) {
 		for (ExpectedRecord r : recs) {
-			FlashId flashId = fff.findFlash(r.wx(), r.wy());
+			FlashId flashId = fff.findFlashId(r.wx(), r.wy());
 			assertEquals(r.fx(), flashId.flashIdX());
 			assertEquals(r.fy(), flashId.flashIdY());
 			FlashDieInst die = fff.findDieInstanceOrNull(flashId, r.wx(), r.wy());
@@ -131,61 +134,21 @@ public class RealWorldExampleTestCase {
 
 	}
 
-	//	private record Rect(int id, double llx, double lly, double urx, double ury) {
-	//
-	//	}
-	//
-	//	public long timeFlashThenDieLookup(List<ExpectedRecord> recs, ZeroZeroFlashInst zzf, List<FlashDieInst> dies) {
-	//		int flashId = 0;
-	//		int dieId = 0;
-	//		Map<Rect, List<Rect>> sillyMap = new HashMap<>();
-	//		for (int fx = -20; fx < 20; fx++) {
-	//			double fllx = zzf.llx() + (fx * zzf.steppingWidth());
-	//			for (int fy = -20; fy < 20; fy++) {
-	//				double flly = zzf.lly() + (fy * zzf.steppingHeight());
-	//				List<Rect> diesForFlash = new ArrayList<>();
-	//				for (FlashDieInst fdi : dies) {
-	//					double dllx = fllx + fdi.llx();
-	//					double dlly = flly + fdi.lly();
-	//					double durx = fllx + fdi.urx();
-	//					double dury = flly + fdi.ury();
-	//					double centerx = dllx + ((durx - dllx) / 2.0);
-	//					double centery = dlly + ((dury - dlly) / 2.0);
-	//					double r = Math.sqrt((centerx * centerx) + (centery * centery));
-	//					if (r < 147_000) { // rougly on wafer
-	//						Rect drect = new Rect(dieId++, dllx, dlly, durx, dury);
-	//						diesForFlash.add(drect);
-	//					}
-	//				}
-	//				if (!diesForFlash.isEmpty()) {
-	//					Rect frect = new Rect(flashId++, fllx, flly, fllx + zzf.steppingWidth(),
-	//							flly + zzf.steppingHeight());
-	//					sillyMap.put(frect, diesForFlash);
-	//				}
-	//			}
-	//		}
-	//
-	//		long startTime = Instant.now().toEpochMilli();
-	//		BiPredicate<Rect, ExpectedRecord> recMatch = (rec, er) -> {
-	//			if (rec.llx < er.wx && er.wx <= rec.urx)
-	//				return false;
-	//			if (rec.lly < er.wy && er.wy <= rec.ury)
-	//				return false;
-	//			return true;
-	//		};
-	//		int nMatched = 0;
-	//		for (ExpectedRecord rec : recs) {
-	//			Rect frect = sillyMap.keySet().stream().filter(r -> recMatch.test(r, rec)).findFirst().orElse(null);
-	//			Rect drect = null;
-	//			if (frect != null) {
-	//				List<Rect> drects = sillyMap.get(frect);
-	//				drect = drects.stream().filter(r -> recMatch.test(r, rec)).findFirst().orElse(null);
-	//				nMatched++;
-	//			}
-	//			assertNotNull(drect);
-	//		}
-	//		assertEquals(nMatched, recs.size());
-	//		long endTime = Instant.now().toEpochMilli();
-	//		return (endTime - startTime);
-	//	}
+	public long timeFlashThenDieLookup(List<ExpectedRecord> recs, ZeroZeroFlashInst zzf, List<FlashDieInst> dies) {
+		SimpleFlashFinder sff = new SimpleFlashFinder(zzf, dies);
+
+		long startTime = Instant.now().toEpochMilli();
+		int nMatched = 0;
+		for (ExpectedRecord rec : recs) {
+			FlashId fid = sff.findFlashId(rec.wx, rec.wy);
+			FlashDieInst die = sff.findDieInstanceOrNull(fid, rec.wx, rec.wy);
+			if (die != null) {
+				nMatched++;
+			}
+			assertNotNull(die);
+		}
+		assertEquals(nMatched, recs.size());
+		long endTime = Instant.now().toEpochMilli();
+		return (endTime - startTime);
+	}
 }

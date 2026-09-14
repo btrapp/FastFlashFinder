@@ -56,7 +56,7 @@ public class FastFlashFinder {
 	 * @param flashRelativeDies (always with coordinates relative to flash origin)
 	 * @return
 	 */
-	public static FastFlashFinder fromNonZeroZerFlash(ZeroZeroFlashInst nonZeroZeroFlash, int flashIdX, int flashIdY,
+	public static FastFlashFinder fromNonZeroZeroFlash(ZeroZeroFlashInst nonZeroZeroFlash, int flashIdX, int flashIdY,
 			List<FlashDieInst> flashRelativeDies) {
 		// waferfx = zeroZeroX + (idX * steppingW)
 		// waferfx - zeroZeroX = (idX * stepppingW)
@@ -71,32 +71,8 @@ public class FastFlashFinder {
 
 	}
 
-	public FlashId findFlash(double waferX, double waferY) {
-		// Figure out the difference in X from the zeroZero flash LLx
-		int dxWaferStepInt = flashStep(waferX, zeroZeroFlash.llx(), zeroZeroFlash.steppingWidth());
-		int dyWaferStepInt = flashStep(waferY, zeroZeroFlash.lly(), zeroZeroFlash.steppingHeight());
-		return new FlashId(dxWaferStepInt, dyWaferStepInt);
-	}
-
-	/**
-	 * Given a wafer level dimension (um), figure out which flash ID would contain
-	 * that dimension. (Notch down, x++ is right, y++ is up)
-	 * 
-	 * @param waferDim
-	 * @param flashStart
-	 * @param flashStep
-	 * @return
-	 */
-	protected static int flashStep(double waferDim, double flashStart, double flashStep) {
-		double dWafer = waferDim - flashStart;
-		double stepDouble = dWafer / flashStep;
-		int stepInt = (int) Math.floor(stepDouble);
-		if (stepDouble == stepInt) {
-			// This is EXACTLY at the start. By convention this doesn't match and should
-			// return the previous flash.
-			return stepInt - 1;
-		}
-		return stepInt;
+	public FlashId findFlashId(double waferX, double waferY) {
+		return CommonFlashUtils.findFlashId(zeroZeroFlash, waferY, waferX);
 	}
 
 	/**
@@ -134,15 +110,8 @@ public class FastFlashFinder {
 	 */
 	public FlashDieInst findDieInstanceOrNull(FlashId flashId, double waferX, double waferY) {
 		// Convert wafer XY into flash-Relative XY
-		double[] dieXY = calculateFlashRelativeXY(flashId, waferX, waferY);
+		double[] dieXY = CommonFlashUtils.calculateFlashRelativeXY(flashId, zeroZeroFlash, waferX, waferY);
 		return findDieInstanceOrNullForFlashXY(dieXY[0], dieXY[1]);
-	}
-
-	double[] calculateFlashRelativeXY(FlashId flashIdXy, double waferX, double waferY) {
-		double[] flashLlXy = zeroZeroFlash.calcFlashLlXy(flashIdXy);
-		double dx = waferX - flashLlXy[0];
-		double dy = waferY - flashLlXy[1];
-		return new double[] { dx, dy };
 	}
 
 	// This expects FLASH coordinates (from the LLxy of the correct flash)
