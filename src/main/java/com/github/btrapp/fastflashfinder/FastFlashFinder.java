@@ -48,10 +48,16 @@ public class FastFlashFinder {
 	 * @param flashStep
 	 * @return
 	 */
-	private int flashStep(double waferDim, double flashStart, double flashStep) {
+	protected static int flashStep(double waferDim, double flashStart, double flashStep) {
 		double dWafer = waferDim - flashStart;
-		double step = dWafer / flashStep;
-		return (int) Math.floor(step);
+		double stepDouble = dWafer / flashStep;
+		int stepInt = (int) Math.floor(stepDouble);
+		if (stepDouble == stepInt) {
+			// This is EXACTLY at the start. By convention this doesn't match and should
+			// return the previous flash.
+			return stepInt - 1;
+		}
+		return stepInt;
 	}
 
 	/**
@@ -67,7 +73,7 @@ public class FastFlashFinder {
 	public FlashDieInst findDieInstanceOrNull(FlashId flashId, double waferX, double waferY) throws FastFlashException {
 		// Convert wafer XY into flash-Relative XY
 		double[] dieXY = calculateFlashRelativeXY(flashId, waferX, waferY);
-		return findDieInstanceOrNull(dieXY[0], dieXY[1]);
+		return findDieInstanceOrNullForFlashXY(dieXY[0], dieXY[1]);
 	}
 
 	private double[] calculateFlashRelativeXY(FlashId flashIdXy, double waferX, double waferY) {
@@ -79,21 +85,26 @@ public class FastFlashFinder {
 	}
 
 	// This expects FLASH coordinates (from the LLxy of the correct flash)
-	protected FlashDieInst findDieInstanceOrNull(double flashX, double flashY) throws FastFlashException {
+	protected FlashDieInst findDieInstanceOrNullForFlashXY(double flashX, double flashY) throws FastFlashException {
 
 		Entry<Double, ScanEvent> seX = xMap.floorEntry(flashX);
 		Entry<Double, ScanEvent> seY = yMap.floorEntry(flashY);
 		if (seX == null || seY == null) {
+			// System.out.println("X or Y is null " + seX + "," + seY);
 			return null;
 		}
 		Set<FlashDieInst> xMatches = seX.getValue().matchDieIds(flashX);
-		if (xMatches.isEmpty())
+		if (xMatches.isEmpty()) {
+			// System.out.println("X doesn't match");
 			return null;
+		}
 
 		Set<FlashDieInst> yMatches = seY.getValue().matchDieIds(flashY);
 		yMatches.retainAll(xMatches);
-		if (yMatches.isEmpty())
+		if (yMatches.isEmpty()) {
+			// System.out.println("Y doesn't match");
 			return null;
+		}
 
 		if (yMatches.size() == 1)
 			return yMatches.iterator().next();
