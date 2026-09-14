@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 public class FlashLookupTestCase {
 	@Test
-	void testFlashStepMath() {
+	void testFlashStepMathSimpleOrigin() {
 		// Given a flash start at 0, and size of 100:
 		double tol = 0.000001; // Allowable tolerance
 		// An exact match at sh
@@ -35,4 +35,18 @@ public class FlashLookupTestCase {
 		assertEquals(9, FastFlashFinder.flashStep(flashSize * 10, zeroZeroFlashStart, flashSize), tol);
 
 	}
+
+	@Test
+	void testFlashStepMathNonZeroOrigin() {
+		double zeroZeroFlashStart = -75;
+		double flashSize = 100;
+		double tol = 0.000001;
+		assertEquals(-1, FastFlashFinder.flashStep(-100, zeroZeroFlashStart, flashSize), tol);
+		assertEquals(-1, FastFlashFinder.flashStep(-75, zeroZeroFlashStart, flashSize), tol);
+		assertEquals(0, FastFlashFinder.flashStep(-75 + 1, zeroZeroFlashStart, flashSize), tol);
+		assertEquals(0, FastFlashFinder.flashStep(-75 + 100, zeroZeroFlashStart, flashSize), tol);
+		assertEquals(1, FastFlashFinder.flashStep(-75 + 100 + 1, zeroZeroFlashStart, flashSize), tol);
+
+	}
+
 }

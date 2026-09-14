@@ -24,12 +24,40 @@ public class FastFlashFinder {
 	/**
 	 * 
 	 * @param zeroZeroFlash the information from the 0,0 flash
-	 * @param dies          a list of all die instances on a flash
+	 * @param dies          a list of all die instances on a flash (coordinates
+	 *                      relative to flash origin)
 	 */
-	public FastFlashFinder(FlashInst zeroZeroFlash, List<FlashDieInst> dies) {
+	public FastFlashFinder(FlashInst zeroZeroFlash, List<FlashDieInst> flashRelativeDies) {
 		this.zeroZeroFlash = zeroZeroFlash;
-		this.xMap = buildScanMap(dies, FlashDieInst::llx, FlashDieInst::urx);
-		this.yMap = buildScanMap(dies, FlashDieInst::lly, FlashDieInst::ury);
+		this.xMap = buildScanMap(flashRelativeDies, FlashDieInst::llx, FlashDieInst::urx);
+		this.yMap = buildScanMap(flashRelativeDies, FlashDieInst::lly, FlashDieInst::ury);
+	}
+
+	/**
+	 * If you dont have a zero zero flash, this will build the grid for any X,Y id
+	 * flash given the wafer level flash and die coordinates for that flash. (For
+	 * example, if flash 0,0 is off wafer and not real, you could pass in a
+	 * FlashInst with wafer coordinate, and a List of FlashDieInsts with wafer
+	 * coodinates and we'll convert them to 0,0 equivlents for you.
+	 * 
+	 * @param nonZeroFlash
+	 * @param flashIdX
+	 * @param flashIdY
+	 * @return
+	 */
+	public static FastFlashFinder fromNonZeroZerFlash(FlashInst nonZeroZeroFlash, int flashIdX, int flashIdY,
+			List<FlashDieInst> flashRelativeDies) {
+		// waferfx = zeroZeroX + (idX * steppingW)
+		// waferfx - zeroZeroX = (idX * stepppingW)
+		// -zeroZeroX = (idX*steppingW) - waferFx
+		// zeroZeroX = waferFx -(idX*steppingW)
+		double fllx = nonZeroZeroFlash.llx() - (flashIdX * nonZeroZeroFlash.steppingWidth());
+		double flly = nonZeroZeroFlash.lly() - (flashIdY * nonZeroZeroFlash.steppingHeight());
+		FlashInst zeroZero = new FlashInst(fllx, flly, nonZeroZeroFlash.steppingWidth(),
+				nonZeroZeroFlash.steppingHeight());
+
+		return new FastFlashFinder(zeroZero, flashRelativeDies);
+
 	}
 
 	public FlashId findFlash(double waferX, double waferY) {
