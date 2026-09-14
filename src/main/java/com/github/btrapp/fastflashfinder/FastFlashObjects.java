@@ -4,15 +4,19 @@ import java.util.Objects;
 
 public interface FastFlashObjects {
 	public record FlashId(int flashIdX, int flashIdY) {
-		
+
 	}
+
 	public record FlashInst(double llx, double lly, double steppingWidth, double steppingHeight) {
-		
+		public double[] calcFlashLlXy(FlashId fid) {
+			return new double[] { llx + (fid.flashIdX() * steppingWidth), lly + (fid.flashIdY() * steppingHeight), };
+		}
 	}
+
 	/**
-	 * Each die on a flash should have an instace of this.  The dieId is unique
-	 * among the dies on the flash.
-	 * Location coordinates should be in um *relative to flash 0,0 at lower left*
+	 * Each die on a flash should have an instace of this. The dieId is unique among
+	 * the dies on the flash. Location coordinates should be in um *relative to
+	 * flash 0,0 at lower left*
 	 * 
 	 * Equality really only should be checking the dieId
 	 */
@@ -33,19 +37,21 @@ public interface FastFlashObjects {
 				return false;
 			FlashDieInst other = (FlashDieInst) obj;
 			return dieId.equals(other.dieId);
-		} 
-		
-		
+		}
+
 	}
+
 	public static enum FlastFlashExceptionErrorCode {
 		OVERLAPPING_DIES;
 	}
+
 	public static final class FastFlashException extends Exception {
 		private static final long serialVersionUID = -5185421960510705220L;
 		FlastFlashExceptionErrorCode code;
+
 		public FastFlashException(FlastFlashExceptionErrorCode code, String msg) {
 			super(msg);
-			this.code=code;
+			this.code = code;
 		}
 	}
 }
