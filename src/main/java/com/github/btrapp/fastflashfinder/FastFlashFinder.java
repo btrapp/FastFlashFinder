@@ -10,6 +10,7 @@ import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.github.btrapp.fastflashfinder.FastFlashObjects.DieEdgeMatchLogic;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FastFlashException;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FlashDieInst;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FlashId;
@@ -20,7 +21,7 @@ public class FastFlashFinder {
 	private final TreeMap<Double, ScanEvent> xMap;
 	private final TreeMap<Double, ScanEvent> yMap;
 	private final ZeroZeroFlashInst zeroZeroFlash; // The reference (0,0) flash.
-	private boolean allowMatchesOnDieLeftSide = true;
+	private DieEdgeMatchLogic dieEdgeLogic = DieEdgeMatchLogic.RIGHT_SIDE;
 
 	/**
 	 * 
@@ -129,13 +130,13 @@ public class FastFlashFinder {
 			// System.out.println("X or Y is null " + seX + "," + seY);
 			return null;
 		}
-		Set<FlashDieInst> xMatches = seX.getValue().matchDieIds(flashX, allowMatchesOnDieLeftSide);
+		Set<FlashDieInst> xMatches = seX.getValue().matchDieIds(flashX, dieEdgeLogic);
 		if (xMatches.isEmpty()) {
 			// System.out.println("X doesn't match");
 			return null;
 		}
 
-		Set<FlashDieInst> yMatches = seY.getValue().matchDieIds(flashY, allowMatchesOnDieLeftSide);
+		Set<FlashDieInst> yMatches = seY.getValue().matchDieIds(flashY, dieEdgeLogic);
 		yMatches.retainAll(xMatches);
 		if (yMatches.isEmpty()) {
 			// System.out.println("Y doesn't match");
@@ -182,15 +183,17 @@ public class FastFlashFinder {
 			return s;
 		}
 
-		public Set<FlashDieInst> matchDieIds(double key, boolean allowMatchesOnDieLeftSide) {
+		public Set<FlashDieInst> matchDieIds(double key, DieEdgeMatchLogic dieLogic) {
 			Set<FlashDieInst> matches = new HashSet<>();
 			matches.addAll(continueEvents);
-			if (key == eventKey)
-				matches.addAll(endEvents); // If we end exactly on this key, its included.
-			if (allowMatchesOnDieLeftSide || key > eventKey)
-				matches.addAll(startEvents); // only include start events if the key is **after** (not equal to) the
-												// event key!
-
+			if (key > eventKey) {
+				matches.addAll(startEvents); // Include start events if the key is **after** (not equal to) the event
+			} else if (key == eventKey) { // This is EXACTLY a start or end...
+				if (dieLogic == DieEdgeMatchLogic.EITHER_SIDE || dieLogic == DieEdgeMatchLogic.LEFT_SIDE)
+					matches.addAll(startEvents);
+				if (dieLogic == DieEdgeMatchLogic.EITHER_SIDE || dieLogic == DieEdgeMatchLogic.RIGHT_SIDE)
+					matches.addAll(endEvents);
+			}
 			return matches;
 		}
 	}
@@ -235,5 +238,9 @@ public class FastFlashFinder {
 			scanEvents.put(key, se);
 		}
 		return scanEvents;
+	}
+
+	public void setDieEdgeLogic(DieEdgeMatchLogic dieEdgeLogic) {
+		this.dieEdgeLogic = dieEdgeLogic;
 	}
 }

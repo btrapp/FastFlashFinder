@@ -45,6 +45,10 @@ public interface FastFlashObjects {
 		OVERLAPPING_DIES;
 	}
 
+	public static enum DieEdgeMatchLogic {
+		EITHER_SIDE, LEFT_SIDE, RIGHT_SIDE;
+	}
+
 	public static final class FastFlashException extends Exception {
 		private static final long serialVersionUID = -5185421960510705220L;
 		FlastFlashExceptionErrorCode code;
