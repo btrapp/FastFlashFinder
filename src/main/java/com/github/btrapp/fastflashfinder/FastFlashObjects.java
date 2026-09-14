@@ -39,6 +39,16 @@ public interface FastFlashObjects {
 			return dieId.equals(other.dieId);
 		}
 
+		public boolean containsXY(double x, double y) {
+			if (x <= llx || x > urx) {
+				return false;
+			}
+			if (y <= lly || y > ury) {
+				return false;
+			}
+			return true;
+		}
+
 	}
 
 	public static enum FlastFlashExceptionErrorCode {

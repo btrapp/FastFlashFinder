@@ -9,7 +9,7 @@ import com.github.btrapp.fastflashfinder.FastFlashObjects.ZeroZeroFlashInst;
 
 public class UsageExample {
 	public static void main(String[] args) throws FastFlashException {
-		// A 2x2 grid:
+		// A readlly dense die map:
 		int dieId = 1;
 		List<FlashDieInst> dies = new ArrayList<>();
 		for (int x = 0; x < 2; x++) {
@@ -19,10 +19,8 @@ public class UsageExample {
 				dies.add(d);
 			}
 		}
-		ZeroZeroFlashInst zeroZeroFlash = new ZeroZeroFlashInst(0, 0, 100, 50); // Starts at wafer 0,0 and has w=100,
-																				// h=50
-
+		ZeroZeroFlashInst zeroZeroFlash = new ZeroZeroFlashInst(0, 0, 100, 50); // Starts at wafer 0,0 and has
+																				// w=100,h=50
 		FastFlashFinder fff = new FastFlashFinder(zeroZeroFlash, dies);
-
 	}
 }
