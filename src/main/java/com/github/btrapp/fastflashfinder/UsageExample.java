@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FastFlashException;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FlashDieInst;
-import com.github.btrapp.fastflashfinder.FastFlashObjects.FlashInst;
+import com.github.btrapp.fastflashfinder.FastFlashObjects.ZeroZeroFlashInst;
 
 public class UsageExample {
 	public static void main(String[] args) throws FastFlashException {
@@ -19,7 +19,7 @@ public class UsageExample {
 				dies.add(d);
 			}
 		}
-		FlashInst zeroZeroFlash = new FlashInst(0, 0, 100, 50);
+		ZeroZeroFlashInst zeroZeroFlash = new ZeroZeroFlashInst(0, 0, 100, 50);
 
 		FastFlashFinder fff = new FastFlashFinder(zeroZeroFlash, dies);
 

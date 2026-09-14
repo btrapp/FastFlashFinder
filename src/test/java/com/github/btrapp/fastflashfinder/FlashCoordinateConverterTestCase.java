@@ -7,12 +7,12 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FlashId;
-import com.github.btrapp.fastflashfinder.FastFlashObjects.FlashInst;
+import com.github.btrapp.fastflashfinder.FastFlashObjects.ZeroZeroFlashInst;
 
 public class FlashCoordinateConverterTestCase {
 	@Test
 	void testConversion() {
-		FlashInst zzf = new FlashInst(-1000, 2000, 500, 750);
+		ZeroZeroFlashInst zzf = new ZeroZeroFlashInst(-1000, 2000, 500, 750);
 		FastFlashFinder fff = new FastFlashFinder(zzf, List.of());
 		double[] rel = fff.calculateFlashRelativeXY(new FlashId(0, 0), -1000 + 1, 2000 + 2);
 		double tol = 0.00001;

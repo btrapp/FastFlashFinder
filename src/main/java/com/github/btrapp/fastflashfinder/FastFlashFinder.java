@@ -13,13 +13,13 @@ import java.util.stream.Collectors;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FastFlashException;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FlashDieInst;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FlashId;
-import com.github.btrapp.fastflashfinder.FastFlashObjects.FlashInst;
+import com.github.btrapp.fastflashfinder.FastFlashObjects.ZeroZeroFlashInst;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FlastFlashExceptionErrorCode;
 
 public class FastFlashFinder {
 	private final TreeMap<Double, ScanEvent> xMap;
 	private final TreeMap<Double, ScanEvent> yMap;
-	private final FlashInst zeroZeroFlash; // The reference (0,0) flash.
+	private final ZeroZeroFlashInst zeroZeroFlash; // The reference (0,0) flash.
 
 	/**
 	 * 
@@ -32,7 +32,7 @@ public class FastFlashFinder {
 	 *                          wafer coordinates.
 	 * 
 	 */
-	public FastFlashFinder(FlashInst zeroZeroFlash, List<FlashDieInst> flashRelativeDies) {
+	public FastFlashFinder(ZeroZeroFlashInst zeroZeroFlash, List<FlashDieInst> flashRelativeDies) {
 		this.zeroZeroFlash = zeroZeroFlash;
 		this.xMap = buildScanMap(flashRelativeDies, FlashDieInst::llx, FlashDieInst::urx);
 		this.yMap = buildScanMap(flashRelativeDies, FlashDieInst::lly, FlashDieInst::ury);
@@ -53,7 +53,7 @@ public class FastFlashFinder {
 	 * @param flashRelativeDies (always with coordinates relative to flash origin)
 	 * @return
 	 */
-	public static FastFlashFinder fromNonZeroZerFlash(FlashInst nonZeroZeroFlash, int flashIdX, int flashIdY,
+	public static FastFlashFinder fromNonZeroZerFlash(ZeroZeroFlashInst nonZeroZeroFlash, int flashIdX, int flashIdY,
 			List<FlashDieInst> flashRelativeDies) {
 		// waferfx = zeroZeroX + (idX * steppingW)
 		// waferfx - zeroZeroX = (idX * stepppingW)
@@ -61,7 +61,7 @@ public class FastFlashFinder {
 		// zeroZeroX = waferFx -(idX*steppingW)
 		double fllx = nonZeroZeroFlash.llx() - (flashIdX * nonZeroZeroFlash.steppingWidth());
 		double flly = nonZeroZeroFlash.lly() - (flashIdY * nonZeroZeroFlash.steppingHeight());
-		FlashInst zeroZero = new FlashInst(fllx, flly, nonZeroZeroFlash.steppingWidth(),
+		ZeroZeroFlashInst zeroZero = new ZeroZeroFlashInst(fllx, flly, nonZeroZeroFlash.steppingWidth(),
 				nonZeroZeroFlash.steppingHeight());
 
 		return new FastFlashFinder(zeroZero, flashRelativeDies);

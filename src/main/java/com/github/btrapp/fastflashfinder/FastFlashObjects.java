@@ -7,7 +7,7 @@ public interface FastFlashObjects {
 
 	}
 
-	public record FlashInst(double llx, double lly, double steppingWidth, double steppingHeight) {
+	public record ZeroZeroFlashInst(double llx, double lly, double steppingWidth, double steppingHeight) {
 		public double[] calcFlashLlXy(FlashId fid) {
 			return new double[] { llx + (fid.flashIdX() * steppingWidth), lly + (fid.flashIdY() * steppingHeight), };
 		}
