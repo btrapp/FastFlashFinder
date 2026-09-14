@@ -13,13 +13,14 @@ import java.util.stream.Collectors;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FastFlashException;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FlashDieInst;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FlashId;
-import com.github.btrapp.fastflashfinder.FastFlashObjects.ZeroZeroFlashInst;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FlastFlashExceptionErrorCode;
+import com.github.btrapp.fastflashfinder.FastFlashObjects.ZeroZeroFlashInst;
 
 public class FastFlashFinder {
 	private final TreeMap<Double, ScanEvent> xMap;
 	private final TreeMap<Double, ScanEvent> yMap;
 	private final ZeroZeroFlashInst zeroZeroFlash; // The reference (0,0) flash.
+	private boolean allowMatchesOnDieLeftSide = true;
 
 	/**
 	 * 
@@ -128,13 +129,13 @@ public class FastFlashFinder {
 			// System.out.println("X or Y is null " + seX + "," + seY);
 			return null;
 		}
-		Set<FlashDieInst> xMatches = seX.getValue().matchDieIds(flashX);
+		Set<FlashDieInst> xMatches = seX.getValue().matchDieIds(flashX, allowMatchesOnDieLeftSide);
 		if (xMatches.isEmpty()) {
 			// System.out.println("X doesn't match");
 			return null;
 		}
 
-		Set<FlashDieInst> yMatches = seY.getValue().matchDieIds(flashY);
+		Set<FlashDieInst> yMatches = seY.getValue().matchDieIds(flashY, allowMatchesOnDieLeftSide);
 		yMatches.retainAll(xMatches);
 		if (yMatches.isEmpty()) {
 			// System.out.println("Y doesn't match");
@@ -181,12 +182,12 @@ public class FastFlashFinder {
 			return s;
 		}
 
-		public Set<FlashDieInst> matchDieIds(double key) {
+		public Set<FlashDieInst> matchDieIds(double key, boolean allowMatchesOnDieLeftSide) {
 			Set<FlashDieInst> matches = new HashSet<>();
 			matches.addAll(continueEvents);
 			if (key == eventKey)
 				matches.addAll(endEvents); // If we end exactly on this key, its included.
-			if (key > eventKey)
+			if (allowMatchesOnDieLeftSide || key > eventKey)
 				matches.addAll(startEvents); // only include start events if the key is **after** (not equal to) the
 												// event key!
 
