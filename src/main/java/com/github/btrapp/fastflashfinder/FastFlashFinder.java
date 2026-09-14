@@ -112,9 +112,9 @@ public class FastFlashFinder {
 		return findDieInstanceOrNullForFlashXY(dieXY[0], dieXY[1]);
 	}
 
-	private double[] calculateFlashRelativeXY(FlashId flashIdXy, double waferX, double waferY) {
-		double fx = flashIdXy.flashIdX() * zeroZeroFlash.steppingWidth();
-		double fy = flashIdXy.flashIdY() * zeroZeroFlash.steppingHeight();
+	double[] calculateFlashRelativeXY(FlashId flashIdXy, double waferX, double waferY) {
+		double fx = zeroZeroFlash.llx() + (flashIdXy.flashIdX() * zeroZeroFlash.steppingWidth());
+		double fy = zeroZeroFlash.lly() + (flashIdXy.flashIdY() * zeroZeroFlash.steppingHeight());
 		double dx = waferX - fx;
 		double dy = waferY - fy;
 		return new double[] { dx, dy };
