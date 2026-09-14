@@ -19,7 +19,8 @@ public class UsageExample {
 				dies.add(d);
 			}
 		}
-		ZeroZeroFlashInst zeroZeroFlash = new ZeroZeroFlashInst(0, 0, 100, 50);
+		ZeroZeroFlashInst zeroZeroFlash = new ZeroZeroFlashInst(0, 0, 100, 50); // Starts at wafer 0,0 and has w=100,
+																				// h=50
 
 		FastFlashFinder fff = new FastFlashFinder(zeroZeroFlash, dies);
 
