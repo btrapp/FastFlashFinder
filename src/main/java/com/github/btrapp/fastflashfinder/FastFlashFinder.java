@@ -23,9 +23,14 @@ public class FastFlashFinder {
 
 	/**
 	 * 
-	 * @param zeroZeroFlash the information from the 0,0 flash
-	 * @param dies          a list of all die instances on a flash (coordinates
-	 *                      relative to flash origin)
+	 * @param zeroZeroFlash     the information from the 0,0 flash
+	 * @param flashRelativeDies a list of all die instances on a flash (coordinates
+	 *                          relative to flash origin) For example if your 0,0
+	 *                          flash's LLX/LLY is -120,400 a chip starting at the
+	 *                          flash LLXY would have flash relative llx of 0 and
+	 *                          lly of 0 since its relative to flash origin and not
+	 *                          wafer coordinates.
+	 * 
 	 */
 	public FastFlashFinder(FlashInst zeroZeroFlash, List<FlashDieInst> flashRelativeDies) {
 		this.zeroZeroFlash = zeroZeroFlash;
@@ -37,12 +42,15 @@ public class FastFlashFinder {
 	 * If you dont have a zero zero flash, this will build the grid for any X,Y id
 	 * flash given the wafer level flash and die coordinates for that flash. (For
 	 * example, if flash 0,0 is off wafer and not real, you could pass in a
-	 * FlashInst with wafer coordinate, and a List of FlashDieInsts with wafer
-	 * coodinates and we'll convert them to 0,0 equivlents for you.
+	 * FlashInst at 4,10 with wafer coordinates and we'll convert to 0,0
+	 * 
+	 * Die references should still be relative to the flash origin (which does not
+	 * change across flashes)
 	 * 
 	 * @param nonZeroFlash
 	 * @param flashIdX
 	 * @param flashIdY
+	 * @param flashRelativeDies (always with coordinates relative to flash origin)
 	 * @return
 	 */
 	public static FastFlashFinder fromNonZeroZerFlash(FlashInst nonZeroZeroFlash, int flashIdX, int flashIdY,
