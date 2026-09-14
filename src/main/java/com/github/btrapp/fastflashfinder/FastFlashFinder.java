@@ -1,5 +1,6 @@
 package com.github.btrapp.fastflashfinder;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,8 @@ public class FastFlashFinder {
 	private final TreeMap<Double, ScanEvent> xMap;
 	private final TreeMap<Double, ScanEvent> yMap;
 	private final ZeroZeroFlashInst zeroZeroFlash; // The reference (0,0) flash.
-	private DieEdgeMatchLogic dieEdgeLogic = DieEdgeMatchLogic.RIGHT_SIDE;
+	private DieEdgeMatchLogic dieEdgeLogic = DieEdgeMatchLogic.EITHER_SIDE; // Default is to assume that a x/y match
+																			// will pass for any exact edge match
 
 	/**
 	 * 
@@ -99,7 +101,30 @@ public class FastFlashFinder {
 	}
 
 	/**
-	 * This expects WAFER level coordiantes (notch down, 0,0 at center of wafer, x++
+	 * Returns true if any of your dies corners (ll,ul,lr,ur) overlap with any other
+	 * dies'
+	 * 
+	 * @param dies
+	 * @return
+	 */
+	public static boolean doMyDieCornersOverlap(List<FlashDieInst> dies) {
+		// Look at all my corners..
+		record XyUm(double x, double y) {
+
+		}
+		Map<XyUm, Integer> counts = new HashMap<>();
+		for (FlashDieInst fdi : dies) {
+			counts.merge(new XyUm(fdi.llx(), fdi.lly()), 1, Integer::sum);
+			counts.merge(new XyUm(fdi.llx(), fdi.ury()), 1, Integer::sum);
+			counts.merge(new XyUm(fdi.urx(), fdi.lly()), 1, Integer::sum);
+			counts.merge(new XyUm(fdi.urx(), fdi.ury()), 1, Integer::sum);
+		}
+		// True if any die's LL matches any other dies UR
+		return counts.values().stream().anyMatch(i -> i.intValue() > 1);
+	}
+
+	/**
+	 * This expects WAFER level coordinates (notch down, 0,0 at center of wafer, x++
 	 * is right, y++ is up)
 	 * 
 	 * @param flashId (@See findFlash(waferX,waferY) to determine this)
@@ -149,7 +174,7 @@ public class FastFlashFinder {
 				"Overlapping Dies found at FlashXY: " + flashX + "," + flashY);
 	}
 
-	private static final class ScanEvent {
+	protected static final class ScanEvent {
 		private double eventKey;
 		private Set<FlashDieInst> endEvents = Set.of();
 		private Set<FlashDieInst> continueEvents = Set.of();
