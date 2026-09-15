@@ -39,14 +39,35 @@ public interface FastFlashObjects {
 			return dieId.equals(other.dieId);
 		}
 
-		public boolean containsXY(double x, double y) {
-			if (x <= llx || x > urx) {
-				return false;
+		public boolean containsXY(double x, double y, DieEdgeMatchLogic edgeLogic) {
+			if (edgeLogic == DieEdgeMatchLogic.EITHER_SIDE) {
+				if (x < llx || x > urx) {
+					return false;
+				}
+				if (y < lly || y > ury) {
+					return false;
+				}
+				return true;
 			}
-			if (y <= lly || y > ury) {
-				return false;
+			if (edgeLogic == DieEdgeMatchLogic.LEFT_SIDE) {
+				if (x < llx || x >= urx) {
+					return false;
+				}
+				if (y < lly || y >= ury) {
+					return false;
+				}
+				return true;
 			}
-			return true;
+			if (edgeLogic == DieEdgeMatchLogic.RIGHT_SIDE) {
+				if (x <= llx || x > urx) {
+					return false;
+				}
+				if (y <= lly || y > ury) {
+					return false;
+				}
+				return true;
+			}
+			return false;
 		}
 
 	}

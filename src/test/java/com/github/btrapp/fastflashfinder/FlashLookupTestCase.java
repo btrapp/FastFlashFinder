@@ -13,26 +13,26 @@ public class FlashLookupTestCase {
 		double zeroZeroFlashStart = 0;
 		double flashSize = 100;
 		// Easy on 0,0 flash
-		assertEquals(0, FastFlashFinder.flashStep(1, zeroZeroFlashStart, flashSize), tol);
+		assertEquals(0, CommonFlashUtils.flashStep(1, zeroZeroFlashStart, flashSize), tol);
 		// Easy on next flash +1
-		assertEquals(1, FastFlashFinder.flashStep(1 + flashSize, zeroZeroFlashStart, flashSize), tol);
+		assertEquals(1, CommonFlashUtils.flashStep(1 + flashSize, zeroZeroFlashStart, flashSize), tol);
 		// Easy on next flash +2
-		assertEquals(2, FastFlashFinder.flashStep(1 + flashSize + flashSize, zeroZeroFlashStart, flashSize), tol);
+		assertEquals(2, CommonFlashUtils.flashStep(1 + flashSize + flashSize, zeroZeroFlashStart, flashSize), tol);
 		// Easy on flash -1
-		assertEquals(-1, FastFlashFinder.flashStep(1 - flashSize, zeroZeroFlashStart, flashSize), tol);
+		assertEquals(-1, CommonFlashUtils.flashStep(1 - flashSize, zeroZeroFlashStart, flashSize), tol);
 
 		// Fussier boundary conditions. By convention we do not match on start but we do
 		// match on end.
 
 		// So using the START of 0,0 flash should actually return -1
-		assertEquals(-1, FastFlashFinder.flashStep(zeroZeroFlashStart, zeroZeroFlashStart, flashSize), tol);
+		assertEquals(-1, CommonFlashUtils.flashStep(zeroZeroFlashStart, zeroZeroFlashStart, flashSize), tol);
 		// And the end of 0,0 should match 0
-		assertEquals(0, FastFlashFinder.flashStep(zeroZeroFlashStart + flashSize, zeroZeroFlashStart, flashSize), tol);
+		assertEquals(0, CommonFlashUtils.flashStep(zeroZeroFlashStart + flashSize, zeroZeroFlashStart, flashSize), tol);
 
 		// So using the START of -10,0 flash should actually return -1
-		assertEquals(-11, FastFlashFinder.flashStep(flashSize * -10, zeroZeroFlashStart, flashSize), tol);
+		assertEquals(-11, CommonFlashUtils.flashStep(flashSize * -10, zeroZeroFlashStart, flashSize), tol);
 		// And the START of 10,0 should match 9
-		assertEquals(9, FastFlashFinder.flashStep(flashSize * 10, zeroZeroFlashStart, flashSize), tol);
+		assertEquals(9, CommonFlashUtils.flashStep(flashSize * 10, zeroZeroFlashStart, flashSize), tol);
 
 	}
 
@@ -41,11 +41,11 @@ public class FlashLookupTestCase {
 		double zeroZeroFlashStart = -75;
 		double flashSize = 100;
 		double tol = 0.000001;
-		assertEquals(-1, FastFlashFinder.flashStep(-100, zeroZeroFlashStart, flashSize), tol);
-		assertEquals(-1, FastFlashFinder.flashStep(-75, zeroZeroFlashStart, flashSize), tol);
-		assertEquals(0, FastFlashFinder.flashStep(-75 + 1, zeroZeroFlashStart, flashSize), tol);
-		assertEquals(0, FastFlashFinder.flashStep(-75 + 100, zeroZeroFlashStart, flashSize), tol);
-		assertEquals(1, FastFlashFinder.flashStep(-75 + 100 + 1, zeroZeroFlashStart, flashSize), tol);
+		assertEquals(-1, CommonFlashUtils.flashStep(-100, zeroZeroFlashStart, flashSize), tol);
+		assertEquals(-1, CommonFlashUtils.flashStep(-75, zeroZeroFlashStart, flashSize), tol);
+		assertEquals(0, CommonFlashUtils.flashStep(-75 + 1, zeroZeroFlashStart, flashSize), tol);
+		assertEquals(0, CommonFlashUtils.flashStep(-75 + 100, zeroZeroFlashStart, flashSize), tol);
+		assertEquals(1, CommonFlashUtils.flashStep(-75 + 100 + 1, zeroZeroFlashStart, flashSize), tol);
 
 	}
 
