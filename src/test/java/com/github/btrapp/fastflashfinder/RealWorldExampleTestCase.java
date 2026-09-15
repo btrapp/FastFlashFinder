@@ -30,10 +30,10 @@ public class RealWorldExampleTestCase {
 		assertEquals(261, recs.size());
 
 		long t0 = Instant.now().toEpochMilli();
-		ScanLineFlashFinder fff = new ScanLineFlashFinder(dieInfo.zzf(), dieInfo.flashDies);
+		ScanLineDieFinder fff = new ScanLineDieFinder(dieInfo.zzf(), dieInfo.flashDies);
 		allDiesMatch(recs, fff);
 		long t1 = Instant.now().toEpochMilli();
-		XRangeFlashFinder sff = new XRangeFlashFinder(dieInfo.zzf(), dieInfo.flashDies);
+		XRangeDieFinder sff = new XRangeDieFinder(dieInfo.zzf(), dieInfo.flashDies);
 		allDiesMatch(recs, sff);
 		long t2 = Instant.now().toEpochMilli();
 		// System.out.println("Timings: " + (t1 - t0) + " and " + (t2 - t1));
@@ -54,17 +54,17 @@ public class RealWorldExampleTestCase {
 //		recs = lotsOfRecords;
 
 		long t0 = Instant.now().toEpochMilli();
-		ScanLineFlashFinder fff = new ScanLineFlashFinder(dieInfo.zzf(), dieInfo.flashDies);
+		ScanLineDieFinder fff = new ScanLineDieFinder(dieInfo.zzf(), dieInfo.flashDies);
 		allDiesMatch(recs, fff);
 		long t1 = Instant.now().toEpochMilli();
-		XRangeFlashFinder sff = new XRangeFlashFinder(dieInfo.zzf(), dieInfo.flashDies);
+		XRangeDieFinder sff = new XRangeDieFinder(dieInfo.zzf(), dieInfo.flashDies);
 		allDiesMatch(recs, sff);
 		long t2 = Instant.now().toEpochMilli();
 		// System.out.println("Timings: " + (t1 - t0) + " and " + (t2 - t1));
 
 	}
 
-	private void allDiesMatch(List<ExpectedRecord> recs, FlashFinderIf fff) {
+	private void allDiesMatch(List<ExpectedRecord> recs, DieFinderIf fff) {
 		for (ExpectedRecord r : recs) {
 			FlashAndDie fad = fff.findFlashAndDie(r.wx(), r.wy());
 			assertEquals(r.fx(), fad.flashId().flashIdX(), "Fx check");
@@ -153,7 +153,7 @@ public class RealWorldExampleTestCase {
 	}
 
 	public long timeFlashThenDieLookup(List<ExpectedRecord> recs, ZeroZeroFlashInst zzf, List<FlashDieInst> dies) {
-		XRangeFlashFinder sff = new XRangeFlashFinder(zzf, dies);
+		XRangeDieFinder sff = new XRangeDieFinder(zzf, dies);
 
 		long startTime = Instant.now().toEpochMilli();
 		int nMatched = 0;

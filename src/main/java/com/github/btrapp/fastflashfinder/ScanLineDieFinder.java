@@ -22,7 +22,7 @@ import com.github.btrapp.fastflashfinder.FastFlashObjects.ZeroZeroFlashInst;
  * Uses Scan-Line or Sweep-Line technique to map die start/end corners as events
  * so a simple treeMap can be used to jump right to the correct event range.
  */
-public class ScanLineFlashFinder implements FlashFinderIf {
+public class ScanLineDieFinder implements DieFinderIf {
 	private final TreeMap<Double, ScanEvent> xMap;
 	private final TreeMap<Double, ScanEvent> yMap;
 	private final ZeroZeroFlashInst zeroZeroFlash; // The reference (0,0) flash.
@@ -40,7 +40,7 @@ public class ScanLineFlashFinder implements FlashFinderIf {
 	 *                          wafer coordinates.
 	 * 
 	 */
-	public ScanLineFlashFinder(ZeroZeroFlashInst zeroZeroFlash, List<FlashDieInst> flashRelativeDies) {
+	public ScanLineDieFinder(ZeroZeroFlashInst zeroZeroFlash, List<FlashDieInst> flashRelativeDies) {
 		this.zeroZeroFlash = zeroZeroFlash;
 		this.xMap = buildScanMap(flashRelativeDies, FlashDieInst::llx, FlashDieInst::urx);
 		this.yMap = buildScanMap(flashRelativeDies, FlashDieInst::lly, FlashDieInst::ury);
@@ -61,7 +61,7 @@ public class ScanLineFlashFinder implements FlashFinderIf {
 	 * @param flashRelativeDies (always with coordinates relative to flash origin)
 	 * @return
 	 */
-	public static ScanLineFlashFinder fromNonZeroZeroFlash(ZeroZeroFlashInst nonZeroZeroFlash, int flashIdX,
+	public static ScanLineDieFinder fromNonZeroZeroFlash(ZeroZeroFlashInst nonZeroZeroFlash, int flashIdX,
 			int flashIdY, List<FlashDieInst> flashRelativeDies) {
 		// waferfx = zeroZeroX + (idX * steppingW)
 		// waferfx - zeroZeroX = (idX * stepppingW)
@@ -72,7 +72,7 @@ public class ScanLineFlashFinder implements FlashFinderIf {
 		ZeroZeroFlashInst zeroZero = new ZeroZeroFlashInst(fllx, flly, nonZeroZeroFlash.steppingWidth(),
 				nonZeroZeroFlash.steppingHeight());
 
-		return new ScanLineFlashFinder(zeroZero, flashRelativeDies);
+		return new ScanLineDieFinder(zeroZero, flashRelativeDies);
 
 	}
 

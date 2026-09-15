@@ -27,7 +27,7 @@ public class Usage {
 		 * die=null]
 		 */
 		ZeroZeroFlashInst zeroZeroFlash = new ZeroZeroFlashInst(-16764.0, -14040.0, 25128.0, 32880.0);
-		ScanLineFlashFinder fff = new ScanLineFlashFinder(zeroZeroFlash, dies);
+		ScanLineDieFinder fff = new ScanLineDieFinder(zeroZeroFlash, dies);
 		FlashId flashId = CommonFlashUtils.findFlashId(zeroZeroFlash, -63698.789, -127552.992);
 		System.out.println(flashId);
 

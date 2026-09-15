@@ -29,7 +29,7 @@ public class DieLookupTestCase {
 			}
 		}
 
-		ScanLineFlashFinder fff = new ScanLineFlashFinder(new ZeroZeroFlashInst(0, 0, 100, 100), dies);
+		ScanLineDieFinder fff = new ScanLineDieFinder(new ZeroZeroFlashInst(0, 0, 100, 100), dies);
 		fff.setDieEdgeLogic(DieEdgeMatchLogic.RIGHT_SIDE);
 		double fx = 0.1;
 		double fy = 0.1;

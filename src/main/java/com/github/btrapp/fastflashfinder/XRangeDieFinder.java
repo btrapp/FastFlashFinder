@@ -15,7 +15,7 @@ import com.github.btrapp.fastflashfinder.FastFlashObjects.ZeroZeroFlashInst;
  * X-range we know is out of bounds. Note that X-ranges can certainly overlap
  * (Multi part wafers, for example)
  */
-public class XRangeFlashFinder implements FlashFinderIf {
+public class XRangeDieFinder implements DieFinderIf {
 	private final ZeroZeroFlashInst zeroZeroFlash;
 	private final Map<XRange, List<FlashDieInst>> dies;
 	private DieEdgeMatchLogic edgeLogic = DieEdgeMatchLogic.EITHER_SIDE;
@@ -30,7 +30,7 @@ public class XRangeFlashFinder implements FlashFinderIf {
 		}
 	}
 
-	public XRangeFlashFinder(ZeroZeroFlashInst zeroZeroFlash, List<FlashDieInst> flashRelativeDies) {
+	public XRangeDieFinder(ZeroZeroFlashInst zeroZeroFlash, List<FlashDieInst> flashRelativeDies) {
 		this.zeroZeroFlash = zeroZeroFlash;
 		this.dies = flashRelativeDies.stream().collect(Collectors.groupingBy(XRange::fromFlashDieInst));
 	}
