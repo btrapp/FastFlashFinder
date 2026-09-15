@@ -18,7 +18,13 @@ For dies on a reticle, a sweep-line approach can be used to build a fast TreeMap
 
 https://ersantana.com/coding/algorithms/sweep_line_algorithms
 
+Also tried a simple X-Range approach, where we store dies keyed by the die's X-Range.
+
 When testing a worst-case wafer example with 700,000 dies (about 8,000 per Flash)
-* brute-force took 400 seconds
-* flash-then-die took 5 seconds
-* this approach took 0.4 seconds
+Running all 3 over multiple iterations, timings worked out to:
+* flash-then-die took ~3 seconds
+* ScanLine took ~0.2 seconds
+* XRange took ~0.02 seconds!
+
+This is sorta surprising but nice since XRange is a simpler implementation
+
