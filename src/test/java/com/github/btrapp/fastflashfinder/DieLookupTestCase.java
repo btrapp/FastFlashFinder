@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.btrapp.fastflashfinder.FastFlashObjects.DieEdgeMatchLogic;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FlashDieInst;
+import com.github.btrapp.fastflashfinder.FastFlashObjects.ZeroZeroFlashInst;
 
 public class DieLookupTestCase {
 	@Test
@@ -28,44 +29,44 @@ public class DieLookupTestCase {
 			}
 		}
 
-		FastFlashFinder fff = new FastFlashFinder(null, dies);
+		ScanLineFlashFinder fff = new ScanLineFlashFinder(new ZeroZeroFlashInst(0, 0, 100, 100), dies);
 		fff.setDieEdgeLogic(DieEdgeMatchLogic.RIGHT_SIDE);
 		double fx = 0.1;
 		double fy = 0.1;
-		double tol = 0.0001;
+		final double tol = 0.0001;
 		FlashDieInst d;
 		try {
-			d = fff.findDieInstanceOrNullForFlashXY(fx, fy);
+			d = fff.findFlashAndDie(fx, fy).die();
 			assertTrue(matches(d, fx, fy), "Checking " + fx + "," + fy);
 
 			fx = 2.5;
 			fy = 1.5;
-			d = fff.findDieInstanceOrNullForFlashXY(fx, fy);
+			d = fff.findFlashAndDie(fx, fy).die();
 			assertTrue(matches(d, fx, fy), "Checking " + fx + "," + fy);
 
 			fx = 5; // Off in +x
 			fy = 1.5;
-			assertNull(fff.findDieInstanceOrNullForFlashXY(fx, fy));
+			assertNull(fff.findFlashAndDie(fx, fy).die());
 			fx = -0.5; // Off in -x
 			fy = 1.5;
-			assertNull(fff.findDieInstanceOrNullForFlashXY(fx, fy));
+			assertNull(fff.findFlashAndDie(fx, fy).die());
 
 			fx = 2.5;
 			fy = -0.5; // Off in -y
-			assertNull(fff.findDieInstanceOrNullForFlashXY(fx, fy));
+			assertNull(fff.findFlashAndDie(fx, fy).die());
 			fx = 2.5;
 			fy = 12.5; // Off in +y
-			assertNull(fff.findDieInstanceOrNullForFlashXY(fx, fy));
+			assertNull(fff.findFlashAndDie(fx, fy).die());
 
 			// Check an exact edge match in X
-			FlashDieInst edgeX = fff.findDieInstanceOrNullForFlashXY(1.0, 0.5);
+			FlashDieInst edgeX = fff.findFlashAndDie(1.0, 0.5).die();
 			assertEquals(0, edgeX.llx(), tol); // Should match the die that starts at 0 and END at 1;
-			edgeX = fff.findDieInstanceOrNullForFlashXY(2.0, 0.5);
+			edgeX = fff.findFlashAndDie(2.0, 0.5).die();
 			assertEquals(1, edgeX.llx(), tol); // Should match the die that starts at 1 and END at 2;
-			edgeX = fff.findDieInstanceOrNullForFlashXY(0, 0.5);
+			edgeX = fff.findFlashAndDie(0, 0.5).die();
 			assertNull(edgeX, "Should match no die");
 
-			FlashDieInst edgeY = fff.findDieInstanceOrNullForFlashXY(0.5, 1.0);
+			FlashDieInst edgeY = fff.findFlashAndDie(0.5, 1.0).die();
 			assertEquals(0, edgeY.lly(), tol); // Should match the die that starts at 0 and END at 1;
 
 		} catch (Exception ex) {

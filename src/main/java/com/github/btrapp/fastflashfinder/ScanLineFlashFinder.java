@@ -13,11 +13,16 @@ import java.util.stream.Collectors;
 
 import com.github.btrapp.fastflashfinder.FastFlashObjects.DieEdgeMatchLogic;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FastFlashException;
+import com.github.btrapp.fastflashfinder.FastFlashObjects.FlashAndDie;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FlashDieInst;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FlashId;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.ZeroZeroFlashInst;
 
-public class FastFlashFinder {
+/**
+ * Uses Scan-Line or Sweep-Line technique to map die start/end corners as events
+ * so a simple treeMap can be used to jump right to the correct event range.
+ */
+public class ScanLineFlashFinder implements FlashFinderIf {
 	private final TreeMap<Double, ScanEvent> xMap;
 	private final TreeMap<Double, ScanEvent> yMap;
 	private final ZeroZeroFlashInst zeroZeroFlash; // The reference (0,0) flash.
@@ -35,7 +40,7 @@ public class FastFlashFinder {
 	 *                          wafer coordinates.
 	 * 
 	 */
-	public FastFlashFinder(ZeroZeroFlashInst zeroZeroFlash, List<FlashDieInst> flashRelativeDies) {
+	public ScanLineFlashFinder(ZeroZeroFlashInst zeroZeroFlash, List<FlashDieInst> flashRelativeDies) {
 		this.zeroZeroFlash = zeroZeroFlash;
 		this.xMap = buildScanMap(flashRelativeDies, FlashDieInst::llx, FlashDieInst::urx);
 		this.yMap = buildScanMap(flashRelativeDies, FlashDieInst::lly, FlashDieInst::ury);
@@ -56,8 +61,8 @@ public class FastFlashFinder {
 	 * @param flashRelativeDies (always with coordinates relative to flash origin)
 	 * @return
 	 */
-	public static FastFlashFinder fromNonZeroZeroFlash(ZeroZeroFlashInst nonZeroZeroFlash, int flashIdX, int flashIdY,
-			List<FlashDieInst> flashRelativeDies) {
+	public static ScanLineFlashFinder fromNonZeroZeroFlash(ZeroZeroFlashInst nonZeroZeroFlash, int flashIdX,
+			int flashIdY, List<FlashDieInst> flashRelativeDies) {
 		// waferfx = zeroZeroX + (idX * steppingW)
 		// waferfx - zeroZeroX = (idX * stepppingW)
 		// -zeroZeroX = (idX*steppingW) - waferFx
@@ -67,12 +72,15 @@ public class FastFlashFinder {
 		ZeroZeroFlashInst zeroZero = new ZeroZeroFlashInst(fllx, flly, nonZeroZeroFlash.steppingWidth(),
 				nonZeroZeroFlash.steppingHeight());
 
-		return new FastFlashFinder(zeroZero, flashRelativeDies);
+		return new ScanLineFlashFinder(zeroZero, flashRelativeDies);
 
 	}
 
-	public FlashId findFlashId(double waferX, double waferY) {
-		return CommonFlashUtils.findFlashId(zeroZeroFlash, waferY, waferX);
+	@Override
+	public FlashAndDie findFlashAndDie(double waferX, double waferY) {
+		FlashId flashId = CommonFlashUtils.findFlashId(zeroZeroFlash, waferX, waferY);
+		FlashDieInst die = findDieInstanceOrNull(flashId, waferX, waferY);
+		return new FlashAndDie(flashId, die);
 	}
 
 	/**
@@ -108,17 +116,13 @@ public class FastFlashFinder {
 	 * @return
 	 * @throws FastFlashException
 	 */
-	public FlashDieInst findDieInstanceOrNull(FlashId flashId, double waferX, double waferY) {
+	private FlashDieInst findDieInstanceOrNull(FlashId flashId, double waferX, double waferY) {
 		// Convert wafer XY into flash-Relative XY
-		double[] dieXY = CommonFlashUtils.calculateFlashRelativeXY(flashId, zeroZeroFlash, waferX, waferY);
-		return findDieInstanceOrNullForFlashXY(dieXY[0], dieXY[1]);
-	}
-
-	// This expects FLASH coordinates (from the LLxy of the correct flash)
-	protected FlashDieInst findDieInstanceOrNullForFlashXY(double flashX, double flashY) {
-
-		Entry<Double, ScanEvent> seX = xMap.floorEntry(flashX);
-		Entry<Double, ScanEvent> seY = yMap.floorEntry(flashY);
+		final double[] flashXY = CommonFlashUtils.calculateFlashRelativeXY(flashId, zeroZeroFlash, waferX, waferY);
+		final double flashX = flashXY[0];
+		final double flashY = flashXY[1];
+		final Entry<Double, ScanEvent> seX = xMap.floorEntry(flashX);
+		final Entry<Double, ScanEvent> seY = yMap.floorEntry(flashY);
 		if (seX == null || seY == null) {
 			// System.out.println("X or Y is null " + seX + "," + seY);
 			return null;
@@ -230,7 +234,9 @@ public class FastFlashFinder {
 		return scanEvents;
 	}
 
+	@Override
 	public void setDieEdgeLogic(DieEdgeMatchLogic dieEdgeLogic) {
 		this.dieEdgeLogic = dieEdgeLogic;
 	}
+
 }

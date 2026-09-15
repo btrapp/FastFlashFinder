@@ -5,9 +5,10 @@ import java.util.List;
 
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FastFlashException;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FlashDieInst;
+import com.github.btrapp.fastflashfinder.FastFlashObjects.FlashId;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.ZeroZeroFlashInst;
 
-public class UsageExample {
+public class Usage {
 	public static void main(String[] args) throws FastFlashException {
 		// A readlly dense die map:
 		int dieId = 1;
@@ -19,8 +20,16 @@ public class UsageExample {
 				dies.add(d);
 			}
 		}
-		ZeroZeroFlashInst zeroZeroFlash = new ZeroZeroFlashInst(0, 0, 100, 50); // Starts at wafer 0,0 and has
-																				// w=100,h=50
-		FastFlashFinder fff = new FastFlashFinder(zeroZeroFlash, dies);
+		/*
+		 * ZeroZeroFlashInst[llx=-16764.0, lly=-14040.0, steppingWidth=25128.0,
+		 * steppingHeight=32880.0] ExpectedRecord[wx=-63698.789, wy=-127552.992, fx=-2,
+		 * fy=-4, die=13] FlashAndDie[flashId=FlashId[flashIdX=-5, flashIdY=-2],
+		 * die=null]
+		 */
+		ZeroZeroFlashInst zeroZeroFlash = new ZeroZeroFlashInst(-16764.0, -14040.0, 25128.0, 32880.0);
+		ScanLineFlashFinder fff = new ScanLineFlashFinder(zeroZeroFlash, dies);
+		FlashId flashId = CommonFlashUtils.findFlashId(zeroZeroFlash, -63698.789, -127552.992);
+		System.out.println(flashId);
+
 	}
 }

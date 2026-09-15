@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.btrapp.fastflashfinder.FastFlashFinder.ScanEvent;
+import com.github.btrapp.fastflashfinder.ScanLineFlashFinder.ScanEvent;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.DieEdgeMatchLogic;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FlashDieInst;
 
@@ -23,11 +23,11 @@ public class ScanEventTestCase {
 		double y2 = 10;
 		FlashDieInst d0 = new FlashDieInst(0, x1, y1, x2, y2);
 		FlashDieInst d1 = new FlashDieInst(1, x2, y1, x3, y2);
-		assertTrue(FastFlashFinder.doMyDieCornersOverlap(List.of(d0, d1)), "detected a die overlap");
+		assertTrue(ScanLineFlashFinder.doMyDieCornersOverlap(List.of(d0, d1)), "detected a die overlap");
 
 		d0 = new FlashDieInst(0, x1, y1, x2, y2);
 		d1 = new FlashDieInst(1, x2 + 0.01, y1, x3, y2);
-		assertFalse(FastFlashFinder.doMyDieCornersOverlap(List.of(d0, d1)), "No die overlap");
+		assertFalse(ScanLineFlashFinder.doMyDieCornersOverlap(List.of(d0, d1)), "No die overlap");
 
 	}
 
@@ -44,7 +44,7 @@ public class ScanEventTestCase {
 		se.setEndEvents(Set.of(d0)); // D0 ends at x2
 		se.setStartEvents(Set.of(d1)); // D1 starts at x2
 
-		assertTrue(FastFlashFinder.doMyDieCornersOverlap(List.of(d0, d1)), "detected a die overlap");
+		assertTrue(ScanLineFlashFinder.doMyDieCornersOverlap(List.of(d0, d1)), "detected a die overlap");
 
 		assertEquals(Set.of(d0, d1), se.matchDieIds(x2, DieEdgeMatchLogic.EITHER_SIDE), "BothEdge"); // Both
 		assertEquals(Set.of(d1), se.matchDieIds(x2, DieEdgeMatchLogic.LEFT_SIDE), "Left matches"); // Just D1

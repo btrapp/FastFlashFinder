@@ -7,6 +7,10 @@ public interface FastFlashObjects {
 
 	}
 
+	public record FlashAndDie(FlashId flashId, FlashDieInst die) {
+
+	}
+
 	public record ZeroZeroFlashInst(double llx, double lly, double steppingWidth, double steppingHeight) {
 		public double[] calcFlashLlXy(FlashId fid) {
 			return new double[] { llx + (fid.flashIdX() * steppingWidth), lly + (fid.flashIdY() * steppingHeight), };
@@ -78,6 +82,14 @@ public interface FastFlashObjects {
 
 	public static enum DieEdgeMatchLogic {
 		EITHER_SIDE, LEFT_SIDE, RIGHT_SIDE;
+
+		public boolean matches(double ll, double v, double ur) {
+			return switch (this) {
+			case EITHER_SIDE -> ((ll <= v) && (v <= ur));
+			case LEFT_SIDE -> ((ll <= v) && (v < ur));
+			case RIGHT_SIDE -> ((ll < v) && (v <= ur));
+			};
+		}
 	}
 
 	public static final class FastFlashException extends Exception {
