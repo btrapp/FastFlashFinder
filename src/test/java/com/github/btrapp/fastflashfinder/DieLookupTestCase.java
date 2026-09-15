@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.btrapp.fastflashfinder.FastFlashObjects.DieEdgeMatchLogic;
 import com.github.btrapp.fastflashfinder.FastFlashObjects.FlashDieInst;
 
 public class DieLookupTestCase {
@@ -28,6 +29,7 @@ public class DieLookupTestCase {
 		}
 
 		FastFlashFinder fff = new FastFlashFinder(null, dies);
+		fff.setDieEdgeLogic(DieEdgeMatchLogic.RIGHT_SIDE);
 		double fx = 0.1;
 		double fy = 0.1;
 		double tol = 0.0001;
